@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Tempo de geração: 02/09/2024 às 00:22
+-- Host: localhost
+-- Tempo de geração: 02/11/2024 às 21:09
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -25,7 +25,7 @@ DELIMITER $$
 --
 -- Procedimentos
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_atualiza_web_sql` (IN `cod_protocolo_calculo` VARCHAR(13), IN `processo` VARCHAR(50), IN `parte` VARCHAR(50), IN `contas` TEXT, IN `subtotal1` DECIMAL(18,2), IN `redutor` DECIMAL(18,2), IN `cod_redutor` TINYINT, IN `subtotal2` DECIMAL(18,2), IN `honorarios` DECIMAL(18,2), IN `honorarios_febrapo` DECIMAL(18,2), IN `total` DECIMAL(18,2), IN `usuario` VARCHAR(50), IN `inconformidade_planos` VARCHAR(550), IN `ano_fator` INT)   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_atualiza_web_sql` (IN `cod_protocolo_calculo` VARCHAR(13), IN `processo` VARCHAR(50), IN `parte` VARCHAR(50), IN `contas` TEXT, IN `subtotal1` DECIMAL(18,2), IN `redutor` DECIMAL(18,2), IN `cod_redutor` TINYINT, IN `subtotal2` DECIMAL(18,2), IN `honorarios` DECIMAL(18,2), IN `honorarios_febrapo` DECIMAL(18,2), IN `total` DECIMAL(18,2), IN `cod_usuario` INT, IN `usuario` VARCHAR(50), IN `inconformidade_planos` VARCHAR(550), IN `ano_fator` INT)   BEGIN
 	DECLARE cod_identificacao_calculo INT;
     DECLARE dados TEXT;
     DECLARE conta VARCHAR(20);
@@ -64,6 +64,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_atualiza_web_sql` (IN `cod_proto
 			,honorarios = honorarios
 			,honorarios_febrapo = honorarios_febrapo
 			,total = total
+            ,cod_usuario = cod_usuario
 			,usuario = usuario
 			,inconformidade_planos = inconformidade_planos
 			,ano_fator = ano_fator
@@ -97,7 +98,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_atualiza_web_sql` (IN `cod_proto
     
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insercao_web_sql` (IN `processo` VARCHAR(50), IN `parte` VARCHAR(50), IN `contas` TEXT, IN `subtotal1` TEXT, IN `redutor` TEXT, IN `cod_redutor` TEXT, IN `subtotal2` TEXT, IN `honorarios` TEXT, IN `honorarios_febrapo` TEXT, IN `total` TEXT, IN `usuario` VARCHAR(50), IN `inconformidade_planos` VARCHAR(550), IN `ano_fator` INT, OUT `resultado` CHAR(13))   BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insercao_web_sql` (IN `processo` VARCHAR(50), IN `parte` VARCHAR(50), IN `contas` TEXT, IN `subtotal1` TEXT, IN `redutor` TEXT, IN `cod_redutor` TEXT, IN `subtotal2` TEXT, IN `honorarios` TEXT, IN `honorarios_febrapo` TEXT, IN `total` TEXT, IN `cod_usuario` INT, IN `usuario` VARCHAR(50), IN `inconformidade_planos` VARCHAR(550), IN `ano_fator` INT, OUT `resultado` VARCHAR(13))   BEGIN
     -- Declaração de variáveis
     DECLARE cod_identificacao_calculo INT;
     DECLARE cod_protocolo_calculo CHAR(13);
@@ -126,8 +127,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insercao_web_sql` (IN `processo`
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
 
     -- Inserção na tabela 'calculo'
-    INSERT INTO calculo (processo, parte, subTotal1, redutor, cod_redutor, subtotal2, honorarios, honorarios_febrapo, total, usuario, inconformidade_planos, ano_fator) 
-    VALUES (processo, parte, subTotal1, redutor, cod_redutor, subtotal2, honorarios, honorarios_febrapo, total, usuario, inconformidade_planos, ano_fator);
+    INSERT INTO calculo (processo, parte, subTotal1, redutor, cod_redutor, subtotal2, honorarios, honorarios_febrapo, total, cod_usuario, usuario, inconformidade_planos, ano_fator) 
+    VALUES (processo, parte, subTotal1, redutor, cod_redutor, subtotal2, honorarios, honorarios_febrapo, total, cod_usuario, usuario, inconformidade_planos, ano_fator);
     
     -- Obtenção do último ID inserido
     SET cod_identificacao_calculo = LAST_INSERT_ID();
@@ -204,10 +205,11 @@ CREATE TABLE `calculo` (
   `honorarios_febrapo` decimal(18,2) NOT NULL,
   `total` decimal(18,2) NOT NULL,
   `inconformidade_planos` varchar(1000) NOT NULL,
+  `cod_usuario` int(11) NOT NULL,
   `usuario` varchar(50) NOT NULL,
   `data_hora_inc` datetime NOT NULL DEFAULT current_timestamp(),
   `apagado` bit(1) NOT NULL DEFAULT b'0',
-  `data_hora_apagado` datetime NOT NULL
+  `data_hora_apagado` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -359,6 +361,7 @@ CREATE TABLE `view_historico_contas` (
 `cod_protocolo` char(18)
 ,`cod_identificacao` int(11)
 ,`conta` varchar(50)
+,`cod_plano` tinyint(4)
 ,`descricao_plano` varchar(10)
 ,`data_posicao_saldo_base` date
 ,`aniversario` tinyint(4)
@@ -407,7 +410,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `view_historico_contas`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_historico_contas`  AS SELECT `calculo`.`cod_protocolo` AS `cod_protocolo`, `contas`.`cod_identificacao` AS `cod_identificacao`, `contas`.`conta` AS `conta`, `plano`.`descricao_plano` AS `descricao_plano`, `plano`.`data_posicao_saldo_base` AS `data_posicao_saldo_base`, `contas`.`aniversario` AS `aniversario`, `contas`.`saldo_base` AS `saldo_base`, `fatores`.`valor_fator` AS `valor_fator`, `contas`.`valor_acordo` AS `valor_acordo` FROM (((`contas` join `plano` on(`contas`.`cod_plano` = `plano`.`cod_plano`)) join `fatores` on(`plano`.`cod_plano` = `fatores`.`cod_plano`)) join `calculo` on(`contas`.`cod_identificacao` = `calculo`.`cod_identificacao` and `fatores`.`ano_fator` = `calculo`.`ano_fator`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `view_historico_contas`  AS SELECT `calculo`.`cod_protocolo` AS `cod_protocolo`, `contas`.`cod_identificacao` AS `cod_identificacao`, `contas`.`conta` AS `conta`, `contas`.`cod_plano` AS `cod_plano`, `plano`.`descricao_plano` AS `descricao_plano`, `plano`.`data_posicao_saldo_base` AS `data_posicao_saldo_base`, `contas`.`aniversario` AS `aniversario`, `contas`.`saldo_base` AS `saldo_base`, `fatores`.`valor_fator` AS `valor_fator`, `contas`.`valor_acordo` AS `valor_acordo` FROM (((`contas` join `plano` on(`contas`.`cod_plano` = `plano`.`cod_plano`)) join `fatores` on(`plano`.`cod_plano` = `fatores`.`cod_plano`)) join `calculo` on(`contas`.`cod_identificacao` = `calculo`.`cod_identificacao` and `fatores`.`ano_fator` = `calculo`.`ano_fator`)) ;
 
 -- --------------------------------------------------------
 
@@ -466,13 +469,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `calculo`
 --
 ALTER TABLE `calculo`
-  MODIFY `cod_identificacao` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `cod_identificacao` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de tabela `contas`
 --
 ALTER TABLE `contas`
-  MODIFY `cod_conta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `cod_conta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT de tabela `plano`
@@ -490,7 +493,7 @@ ALTER TABLE `redutor`
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `cod_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
