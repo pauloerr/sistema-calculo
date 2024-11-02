@@ -1,21 +1,26 @@
 <?php
-include 'db_connect.php'; // Inclui o script de conexão
-// Consulta SQL
-$sql = "SELECT * FROM view_tabela_fatores";
-$data = $conn->query($sql);
-if ($data === false) {
-    echo "Erro na consulta: " . $conn->error;
-    exit();
-}
-$fatoresFebraban = array();
-if ($data->num_rows > 0) {
-    while($row = $data->fetch_assoc()) {
-        $fatoresFebraban[] = $row;
-    }
-}
-// Fechar a conexão
-$conn->close();
-$numero_contas = 0;
+	include_once 'db_connect.php'; // Inclui o script de conexão
+	$conn = getConnection();
+	// Consulta SQL
+	$sql = "SELECT * FROM view_tabela_fatores";
+	$data = $conn->query($sql);
+	if ($data === false) {
+		echo "Erro na consulta: " . $conn->error;
+		exit();
+	}
+	$fatoresFebraban = array();
+	if ($data->num_rows > 0) {
+		while($row = $data->fetch_assoc()) {
+			$fatoresFebraban[] = $row;
+		}
+	}
+	// Fechar a conexão
+	$conn->close();
+	if (!empty($codIdentificacao)) {
+		$numero_contas = $qtdeContas;
+	} else {
+		$numero_contas = 0;
+	}
 ?>
 <script>
 	function BtnContas() {
@@ -36,7 +41,7 @@ $numero_contas = 0;
 
 		contaContas.innerHTML = "<input class='form-control form-control-sm rounded centraliza-elemento conta' type='text' id='Conta" + numero + "' name='Conta" + numero + "' value='' required onkeyUp='HabilitaCalculoCheckBox(this.id);'/>";
 		planoContas.innerHTML = '<select class="custom-select custom-select-lg form-select form-select-sm plano rounded centraliza-elemento" id="Plano' + numero + '" name="Plano' + numero + '" onchange="defineFatorAcordo(this.id); calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"><option value="0">Selecione...</option><?php foreach ($fatoresFebraban as $plano) { ?><option value="<?php echo $plano['cod_plano'] .'|' .$plano["valor_fator"] .'|' .$plano['data_posicao_saldo_base'] ?>"><?php echo $plano["descricao_plano"] ?></option><?php } ?></select>';
-		aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + numero + '" name="Aniversario' + numero + '" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
+		aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + numero + '" name="Aniversario' + numero + '" min="1" max="31" maxlength="1" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
 		mesBaseContas.innerHTML = '<input class="form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento" type="text" id="MesBase' + numero + '" name="MesBase' + numero + '" disabled>';
 		saldoBaseContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-saldo centraliza-elemento' type='text' id='SaldoBase" + numero + "' name='SaldoBase" + numero + "' onkeyup='calculaValorAcordo(this.id); formataSaldo(this.id); validaDiaBaseLote(); resumoResultado()'>";
         fatorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='FatorAcordo" + numero + "' name='FatorAcordo" + numero + "' disabled onchange='valorAcordo(this.id)'>";
@@ -130,7 +135,7 @@ $numero_contas = 0;
 
 			contaContas.innerHTML = "<input class='form-control form-control-sm rounded centraliza-elemento conta' type='text' id='Conta" + i + "' name='Conta" + i + "' value='' required />";
 			planoContas.innerHTML = '<select class="custom-select custom-select-lg form-select form-select-sm plano rounded centraliza-elemento" id="Plano' + i + '" name="Plano' + i + '" onchange="defineFatorAcordo(this.id); calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()" ><option value="0">Selecione...</option><?php foreach ($fatoresFebraban as $plano) { ?><option value="<?php echo $plano['cod_plano'] .'|' .$plano["valor_fator"] .'|' .$plano['data_posicao_saldo_base'] ?>"><?php echo $plano["descricao_plano"] ?></option><?php } ?></select>';
-            aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + i + '" name="Aniversario' + i + '" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
+            aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + i + '" name="Aniversario' + i + '" min="1" max="31" maxlength="1" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
 			mesBaseContas.innerHTML = '<input class="form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento" type="text" id="MesBase' + i + '" name="MesBase' + i + '" disabled>';
 			saldoBaseContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-saldo centraliza-elemento' type='text' id='SaldoBase" + i + "' name='SaldoBase" + i + "' onkeyup='calculaValorAcordo(this.id); formataSaldo(this.id); validaDiaBaseLote(); resumoResultado()'>";
 			fatorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='FatorAcordo" + i + "' name='FatorAcordo" + i + "' disabled onchange='valorAcordo(this.id)'>";
@@ -139,7 +144,31 @@ $numero_contas = 0;
 
 		}
 
+		contas();
 	}
+
+
+	function contas() {
+        const contas = <?php echo json_encode($contas); ?>;
+        contas.forEach((conta, index) => {
+
+			var dataSaldoBase = conta.data_posicao_saldo_base;
+			var partesData = dataSaldoBase.split('-');
+			var dataFormatada = partesData[1] + '/' + partesData[0];
+
+
+            document.getElementById("Conta" + index).value = conta.conta;
+            document.getElementById("Plano" + index).value = conta.cod_plano + "|" + conta.valor_fator + "|" + conta.data_posicao_saldo_base;
+            document.getElementById("Aniversario" + index).value = conta.aniversario;
+			document.getElementById("MesBase" + index).value = dataFormatada;
+			document.getElementById("SaldoBase" + index).value = formataSaldoBR(conta.saldo_base);            
+			document.getElementById("FatorAcordo" + index).value = conta.valor_fator.replace(/\./g, ',');
+            document.getElementById("ValorAcordo" + index).value = formataSaldoBR(conta.valor_acordo);
+
+
+        });
+	}
+
 
 	montaLinhas();
 
@@ -196,6 +225,7 @@ $numero_contas = 0;
 </table>
 
 <script>
+
 
 	function verificaPlanos(){
 		//Conta número de linhas da tabela de contas
@@ -453,7 +483,7 @@ $numero_contas = 0;
 		
 		// Criar um teste de condição para verificar se existe apenas planos Collor I. 
 		// Se existir apenas contas com plano Collor I, totalizar o saldo base de todos as contas e conferir o valor
-		// final se está no enquadramento abaixo. Se o valor total for maior que 84817,64, manter o valor calculado anteriormente
+		// final se está no enquadramento abaixo. Se o valor tot$contas al for maior que 84817,64, manter o valor calculado anteriormente
 		// se estiver dentro de alguma condição abaixo, zerar o valor calculado e na função resumoResultado() criar uma
 		// verificação do valor total do saldo base e atribuir o valor para o subtotal1 conforme a tabela abaixo.
 
@@ -514,7 +544,7 @@ $numero_contas = 0;
 		
 		//if (valorCalculado > 0) {
 			document.getElementById(idValorAcordo).value = formataSaldoBR(valorCalculado);
-		//}
+		//}echo $numero_contas;
 	}
 	function formataSaldo(id) {
 		valor = document.getElementById(id).value;
@@ -569,6 +599,4 @@ $numero_contas = 0;
 		//Atualiza o valor do campo de entrada com a moeda formatada
 		return valor;
 	}	
-
-
 </script>

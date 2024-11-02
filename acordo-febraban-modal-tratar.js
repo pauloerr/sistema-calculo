@@ -8,14 +8,13 @@ function SalvarCalculoAcordoFebraban() {
         console.log('Cálculo já salvo, atualizar dados.');
         novoCalculo = 1;
     }
-    usuario = 'Usuario Padrão';
+
     //Informações do Sequencial
     processo = $('#processo').val();
     nomeParte = $('#nomeParte').val();
     console.log('#### INFORMAÇÕES DO SEQUENCIAL ####')
     console.log('Processo: ' + processo);
     console.log('Nome da parte: ' + nomeParte);
-    console.log('Usuário: ' + usuario);
     //Verificação de contas
     var quantidadeContas = $('#bodyContas').children().length;
     contas = '';
@@ -102,7 +101,6 @@ function SalvarCalculoAcordoFebraban() {
                 'honorarios': honorarios,
                 'honorariosFebrapo': honorariosFebrapo,
                 'total': total,
-                'usuario': usuario,
                 'inconformidade': inconformidade,
                 'anoFator': anoFator
             },
@@ -139,7 +137,6 @@ function SalvarCalculoAcordoFebraban() {
                 'honorarios': honorarios,
                 'honorariosFebrapo': honorariosFebrapo,
                 'total': total,
-                'usuario': usuario,
                 'inconformidade': inconformidade,
                 'anoFator': anoFator
             },
@@ -169,4 +166,46 @@ function formataMoeda(valor) {
     valor = valor.replaceAll('.', '');
     valor = valor.replace(',', '.');   
     return valor;
+}
+
+function ExecutaRotinaImpressao() {
+    codProtocolo = $('#protocoloAcordoFebrabanHidden').val();
+    fetch('impressao.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 'codProtocolo': codProtocolo }) // Passe os dados necessários aqui
+    })
+    .then(response => response.text())
+    .then(html => {
+        // Abre uma nova janela sem os botões do navegador
+        const janelaImpressao = window.open('', '', 'width=800,height=600');
+
+        // Insere o conteúdo carregado na nova janela
+        janelaImpressao.document.open();
+        janelaImpressao.document.write(`
+            <html>
+                <head>
+                    <title>Impressão do Relatório</title>
+                    <style>
+                        /* Adicione seus estilos para o conteúdo de impressão */
+                        body { font-family: Arial, sans-serif; }
+                    </style>
+                </head>
+                <body>${html}</body>
+            </html>
+        `);
+        janelaImpressao.document.close();
+        
+        // Foca a janela e chama a função de impressão
+        janelaImpressao.focus();
+        janelaImpressao.print();
+        
+        // Fecha a janela após a impressão
+        janelaImpressao.onafterprint = () => janelaImpressao.close();
+    })
+    .catch(error => {
+        console.error('Erro ao carregar o conteúdo de impressão:', error);
+    });
 }

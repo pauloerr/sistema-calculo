@@ -1,5 +1,6 @@
 <?php
-include 'db_connect.php'; // Inclui o script de conexão
+include_once 'db_connect.php'; // Inclui o script de conexão
+$conn = getConnection();
 // Consulta SQL
 $sql = "SELECT * FROM view_ano_fator";
 $data = $conn->query($sql);
@@ -16,10 +17,6 @@ if ($data->num_rows > 0) {
 // Fechar a conexão
 $conn->close();
 
-// Exibir os dados
-// echo "<pre>";
-// print_r($anoFatorFebraban);
-// echo "</pre>";
 ?>
 
 <style>
@@ -52,32 +49,32 @@ $conn->close();
             <div class="row">
                 <div class="col-6">SubTotal 1: </div>
                 <div class="col-1">R$</div>                
-                <div class="col-5 d" id="subTotal1" value='0,00'>0,00</div>
+                <div class="col-5 d" id="subTotal1" value='<?php echo !empty($subtotal1) ? $subtotal1 : '0,00'; ?>'><?php echo !empty($subtotal1) ? $subtotal1 : '0,00'; ?></div>
             </div>
             <div class="row">
-                <div class="col-6" id="redutor %">Redutor (0%):</div>
+                <div class="col-6" id="redutor %">Redutor (<?php echo !empty($valorRedutor) ? $valorRedutor : '0'?>%):</div>
                 <div class="col-1">R$</div>
-                <div class="col-5 d" id="redutor" value='0,00'>0,00</div>
+                <div class="col-5 d" id="redutor" value='<?php echo !empty($redutor) ? $redutor : '0,00'; ?>'><?php echo !empty($redutor) ? $redutor : '0,00'; ?></div>
             </div>
             <div class="row totais">
                 <div class="col-6">SubTotal 2: </div>
                 <div class="col-1">R$</div>
-                <div class="col-5 d" id="subTotal2" value='0,00'>0,00</div>
+                <div class="col-5 d" id="subTotal2" value='<?php echo !empty($subtotal2) ? $subtotal2 : '0,00'; ?>'><?php echo !empty($subtotal2) ? $subtotal2 : '0,00'; ?></div>
             </div>
             <div class="row">
                 <div class="col-6">Honorários (10%): </div>
                 <div class="col-1">R$</div>
-                <div class="col-5 d" id="honorarios" value='0,00'>0,00</div>
+                <div class="col-5 d" id="honorarios" value='<?php echo !empty($honorarios) ? $honorarios : '0,00'; ?>'><?php echo !empty($honorarios) ? $honorarios : '0,00'; ?></div>
             </div>
             <div class="row">
                 <div class="col-6">Honorários FEBRAPO (5%): </div>
                 <div class="col-1">R$</div>
-                <div class="col-5 d" id="honorariosFebrapo" value='0,00'>0,00</div>
+                <div class="col-5 d" id="honorariosFebrapo" value='<?php echo !empty($honorariosFebrapo) ? $honorariosFebrapo : '0,00'; ?>'><?php echo !empty($honorariosFebrapo) ? $honorariosFebrapo : '0,00'; ?></div>
             </div>
             <div class="row totais">
                 <div class="col-6">Total: </div>
                 <div class="col-1">R$</div>
-                <div class="col-5 d" id="total" value='0,00'>0,00</div>
+                <div class="col-5 d" id="total" value='<?php echo !empty($total) ? $total : '0,00'; ?>'><?php echo !empty($total) ? $total : '0,00'; ?></div>
             </div>
         </div>
     </div>

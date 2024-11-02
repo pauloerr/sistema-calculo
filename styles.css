@@ -23,3 +23,7 @@ footer {
 #conteudo {
     min-height: 400px; /* Garante uma altura mínima para o conteúdo */
 }
+
+a {
+    text-decoration: none;
+}

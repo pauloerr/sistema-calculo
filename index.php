@@ -1,3 +1,10 @@
+<?php
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: ../logon/index.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -23,8 +30,12 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#" id="link-meus-calculos"><i class="bi bi-file-earmark-bar-graph"></i> Meus Cálculos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#" id="link-sobre"><i class="bi bi-info-square"></i> Sobre</a>
+                    </li>                    
                 </ul>
             </div>
+            <spam class="text-white">Conectado como <?php echo ucfirst(strtolower($_SESSION['user_name']));?></spam>&nbsp;&nbsp;&nbsp;<a class="text-white" href="logout.php"><b><i class="bi bi-box-arrow-right"></i></b></a>
         </div>
     </nav>
 
@@ -39,5 +50,9 @@
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="scripts.js"></script>
+    <!-- Em seguida, o CSS do DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- E por último, o JS do DataTables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </body>
 </html>
