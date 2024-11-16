@@ -1,11 +1,10 @@
 <?php
-// Ativar exibição de erros
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-include_once 'db_connect.php'; // Inclui o script de conexão
+include_once 'db_connect.php'; 
 $conn = getConnection();
-// Consulta SQL
+
 $sql = "SELECT * FROM calculo WHERE 1=1";
 $data = $conn->query($sql);
 if ($data === false) {
@@ -14,13 +13,11 @@ if ($data === false) {
 }
 $calculos = array();
 if ($data->num_rows > 0) {
-    // Obter todas as linhas em um array
     while ($row = $data->fetch_assoc()) {
         $calculos[] = $row;
     }
 }
 
-// Fechar a conexão
 $conn->close();
 
 ?>
@@ -74,13 +71,11 @@ $conn->close();
 
 <script>
     function carregarCalculo(codProtocolo) {
-        // Faz a requisição AJAX para carregar os dados do cálculo
         $.ajax({
             url: 'novo_calculo.php',
             type: 'GET',
             data: { cod_protocolo: codProtocolo },
             success: function(response) {
-                // Insere o conteúdo retornado dentro do contêiner
                 $('#conteudo').html(response);
             },
             error: function() {
@@ -110,9 +105,6 @@ $conn->close();
     }
 
 $(document).ready(function() {
-
-
-
     $('#tabelaCalculos').DataTable({
         "paging": true,
         "searching": true,

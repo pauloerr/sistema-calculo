@@ -1,10 +1,8 @@
 <?php
-// Ativar exibição de erros
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Conexão com o banco de dados
 include_once 'db_connect.php';
 include_once 'model.php';
 
@@ -13,16 +11,9 @@ if (isset($_GET['cod_protocolo'])) {
     $tipoCalculo = "Editar";
     $codProtocolo = $_GET['cod_protocolo'];
 
-    // Obtém a conexão
-    $conn = getConnection(); // A conexão deve ser obtida aqui
-
-    // Cria uma nova instância da classe AcordoFebraban
+    $conn = getConnection();
     $acordoFebraban = new AcordoFebraban($conn);
-
-    // Chamada da função getCalculos
     $calculo = $acordoFebraban->getCalculo($codProtocolo);
-
-    // Atribuição de valores às variáveis
     $codIdentificacao = htmlspecialchars($calculo[0]['cod_identificacao']);
     $processo = htmlspecialchars($calculo[0]['processo']);
     $nome = htmlspecialchars($calculo[0]['parte']);
@@ -33,14 +24,10 @@ if (isset($_GET['cod_protocolo'])) {
     $honorariosFebrapo = htmlspecialchars(number_format($calculo[0]['honorarios_febrapo'], 2, ',', '.'));
     $total = htmlspecialchars(number_format($calculo[0]['total'], 2, ',', '.'));
     $codRedutor = htmlspecialchars($calculo[0]['cod_redutor']);
-
     $contas = $acordoFebraban->getContasCalculo($codIdentificacao);
     $qtdeContas = count($contas);
-
     $redutores = $acordoFebraban->getRedutor($codRedutor);
     $valorRedutor = htmlspecialchars($redutores[0]['valor_redutor']);
-
-    // Fecha a conexão
     $conn->close();
 }
 ?>

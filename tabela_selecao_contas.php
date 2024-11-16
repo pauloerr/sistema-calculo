@@ -1,7 +1,7 @@
 <?php
-	include_once 'db_connect.php'; // Inclui o script de conexão
+	include_once 'db_connect.php';
 	$conn = getConnection();
-	// Consulta SQL
+
 	$sql = "SELECT * FROM view_tabela_fatores";
 	$data = $conn->query($sql);
 	if ($data === false) {
@@ -14,7 +14,7 @@
 			$fatoresFebraban[] = $row;
 		}
 	}
-	// Fechar a conexão
+
 	$conn->close();
 	if (!empty($codIdentificacao)) {
 		$numero_contas = $qtdeContas;
@@ -26,7 +26,6 @@
 	function BtnContas() {
 		document.getElementById("bodyContas").style.display = '';
 		document.getElementById("bodyContas").style.textAlign = "center";
-
 		var tabelaContas = document.getElementById("tabela-contas");
 		var numero = tabelaContas.rows.length;
 		var rowContas = tabelaContas.insertRow(-1);
@@ -38,7 +37,6 @@
 		var fatorAcordoContas = rowContas.insertCell(5);
 		var valorAcordoContas = rowContas.insertCell(6);
 		var excluirContas = rowContas.insertCell(7);
-
 		contaContas.innerHTML = "<input class='form-control form-control-sm rounded centraliza-elemento conta' type='text' id='Conta" + numero + "' name='Conta" + numero + "' value='' required onkeyUp='HabilitaCalculoCheckBox(this.id);'/>";
 		planoContas.innerHTML = '<select class="custom-select custom-select-lg form-select form-select-sm plano rounded centraliza-elemento" id="Plano' + numero + '" name="Plano' + numero + '" onchange="defineFatorAcordo(this.id); calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"><option value="0">Selecione...</option><?php foreach ($fatoresFebraban as $plano) { ?><option value="<?php echo $plano['cod_plano'] .'|' .$plano["valor_fator"] .'|' .$plano['data_posicao_saldo_base'] ?>"><?php echo $plano["descricao_plano"] ?></option><?php } ?></select>';
 		aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + numero + '" name="Aniversario' + numero + '" min="1" max="31" maxlength="1" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
@@ -47,7 +45,6 @@
         fatorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='FatorAcordo" + numero + "' name='FatorAcordo" + numero + "' disabled onchange='valorAcordo(this.id)'>";
 		valorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='ValorAcordo" + numero + "' name='ValorAcordo" + numero + "' disabled onchange='formataSaldo(this.id)'>";
 		excluirContas.innerHTML = "<i class='bi bi-dash-circle' id='BtnExcluiContas" + numero + "' name='BtnExcluiContas" + numero + "' onclick='BtnExcluiLinhaContas(this); ContaCliqueExcluiContas(); ReIndexarTabelaContas(); validaDiaBaseLote(); resumoResultado()' style='cursor: pointer;'></i>";
-
 	}
 
 	function BtnExcluiLinhaContas(linha) {
@@ -65,10 +62,8 @@
 
 	function ReIndexarTabelaContas() {
 		var i, n, data, indice, rentab
-
 		var tabelaContas = document.getElementById("tabela-contas");
 		var numeroLinha = tabelaContas.rows.length;
-
 		n = 0
 		for (i = 0; i < numeroLinha; i++) {
 			conta = document.getElementById("Conta" + i);
@@ -79,7 +74,6 @@
 			fatorAcordo = document.getElementById("FatorAcordo" + i);
 			valorAcordo = document.getElementById("ValorAcordo" + i);
 			excluir = document.getElementById("BtnExcluiContas" + i);
-			
 			if (conta == null) {
 				n = i;
 			} else {
@@ -91,7 +85,6 @@
 				fatorAcordo.id = "FatorAcordo" + n;
                 valorAcordo.id = "ValorAcordo" + n;
 				excluir.id = "BtnExcluiContas" + n;
-				
 				conta.name = "Conta" + n;
 				plano.name = "Plano" + n;
 				aniversario.name = "Aniversario" + n;
@@ -100,7 +93,6 @@
 				fatorAcordo.name = "FatorAcordo" + n;
                 valorAcordo.name = "ValorAcordo" + n;
 				excluir.name = "BtnExcluiContas" + n;
-				
 				++n;
 			}
 		}
@@ -116,11 +108,8 @@
 
 	function montaLinhas() {
         qtdeLinhas = <?php echo $numero_contas ?>;
-
         var tabelaContas = document.getElementById("tabela-contas");
-
         for (let i = 1; i < qtdeLinhas; i++) {
-
             var rowContas = tabelaContas.insertRow(-1);
 			var contaContas = rowContas.insertCell(0);
 			var planoContas = rowContas.insertCell(1);
@@ -130,9 +119,7 @@
             var fatorAcordoContas = rowContas.insertCell(5);
 			var valorAcordoContas = rowContas.insertCell(6);
             var excluirContas = rowContas.insertCell(7);
-			
 			document.getElementById("bodyContas").style.textAlign = "center";
-
 			contaContas.innerHTML = "<input class='form-control form-control-sm rounded centraliza-elemento conta' type='text' id='Conta" + i + "' name='Conta" + i + "' value='' required />";
 			planoContas.innerHTML = '<select class="custom-select custom-select-lg form-select form-select-sm plano rounded centraliza-elemento" id="Plano' + i + '" name="Plano' + i + '" onchange="defineFatorAcordo(this.id); calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()" ><option value="0">Selecione...</option><?php foreach ($fatoresFebraban as $plano) { ?><option value="<?php echo $plano['cod_plano'] .'|' .$plano["valor_fator"] .'|' .$plano['data_posicao_saldo_base'] ?>"><?php echo $plano["descricao_plano"] ?></option><?php } ?></select>';
             aniversarioContas.innerHTML = '<input class="datalist-aniversario form-control form-control-sm rounded centraliza-elemento" type="number" id="Aniversario' + i + '" name="Aniversario' + i + '" min="1" max="31" maxlength="1" value="1" required onchange="calculaValorAcordo(this.id); validaDiaBaseLote(); resumoResultado()"/>';
@@ -141,22 +128,16 @@
 			fatorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='FatorAcordo" + i + "' name='FatorAcordo" + i + "' disabled onchange='valorAcordo(this.id)'>";
 			valorAcordoContas.innerHTML = "<input class='form-control form-control-sm rounded datalist-extratosaldo centraliza-elemento' type='text' id='ValorAcordo" + i + "' name='ValorAcordo" + i + "' disabled onchange='formataSaldo(this.id)'>";
 			excluirContas.innerHTML = "<i class='bi bi-dash-circle' id='BtnExcluiContas" + i + "' name='BtnExcluiContas" + i + "' onclick='BtnExcluiLinhaContas(this); ContaCliqueExcluiContas(); ReIndexarTabelaContas(); validaDiaBaseLote(); resumoResultado()' style='cursor: pointer;'></i>";
-
 		}
-
 		contas();
 	}
-
 
 	function contas() {
         const contas = <?php echo json_encode($contas); ?>;
         contas.forEach((conta, index) => {
-
 			var dataSaldoBase = conta.data_posicao_saldo_base;
 			var partesData = dataSaldoBase.split('-');
 			var dataFormatada = partesData[1] + '/' + partesData[0];
-
-
             document.getElementById("Conta" + index).value = conta.conta;
             document.getElementById("Plano" + index).value = conta.cod_plano + "|" + conta.valor_fator + "|" + conta.data_posicao_saldo_base;
             document.getElementById("Aniversario" + index).value = conta.aniversario;
@@ -164,21 +145,15 @@
 			document.getElementById("SaldoBase" + index).value = formataSaldoBR(conta.saldo_base);            
 			document.getElementById("FatorAcordo" + index).value = conta.valor_fator.replace(/\./g, ',');
             document.getElementById("ValorAcordo" + index).value = formataSaldoBR(conta.valor_acordo);
-
-
         });
 	}
-
-
 	montaLinhas();
-
 </script>
 
 <div style="display: none;">Total de campos de contas: <a id="cliqueContas" name="cliqueContas">0</a></div>
 <div style="display: none;">Total de campos de contas excluídos: <a id="cliqueExcluiContas" name="cliqueExcluiContas">0</a></div>
 <input type="hidden" id="hNumContas" name="hNumContas" value="" />
 <input type="hidden" id="hNumExcluiContas" name="hNumExcluiContas" value="" />
-
 <table id="tabela-contas" class="display" style="width:100%">
 	<thead id="headContas" class="contas-cabecalho">
 		<tr>
@@ -225,10 +200,7 @@
 </table>
 
 <script>
-
-
 	function verificaPlanos(){
-		//Conta número de linhas da tabela de contas
 		let numLinhas = $('#tabela-contas tr').length;
 		let arrayCodigoPlano;
 		let stringCodigosPlanos = '';
@@ -240,7 +212,6 @@
 			let arrayCodigoPlano = codPlano.split("|");
 			stringCodigosPlanos = stringCodigosPlanos + '|' + arrayCodigoPlano[0];
 		}
-		//Elimina o primeiro caractere '|'
 		stringCodigosPlanos = stringCodigosPlanos.substring(1);
 		let mensagem = '';
 		if (stringCodigosPlanos.indexOf("3") == -1 && ( stringCodigosPlanos.indexOf("1") >= 0 || stringCodigosPlanos.indexOf("2") >= 0 || stringCodigosPlanos.indexOf("4") >= 0 ) ) {
@@ -309,8 +280,7 @@
 	function resumoResultado() {
 		let numLinhas = $('#tabela-contas tr').length;
 		let subTotal1 = '0';
-
-		// Criar um teste de condição para verificar se existe apenas planos Collor I.
+		//Criar um teste de condição para verificar se existe apenas planos Collor I.
 		//Conta número de linhas da tabela de contas
 		let apenasCollorI = 1;
 		let saldoBasePlano = 0;
@@ -524,79 +494,34 @@
 			//console.log('Total ' + saldoBasePlano + ' menor que 84817,64');
 			valorCalculado = '0.00';
 		}
-
-		//if (arrayFatorPlano[0] == 3) {
-		// 	console.log('plano collor 1');
-		// 	if (Number(formataSaldoUS(saldoBase)) < 30000) {
-		// 		console.log('saldo base menor que 30 mil ' + Number(formataSaldoUS(saldoBase)));
-		// 		valorCalculado = '100000';
-		// 	} else if (Number(formataSaldoUS(saldoBase)) >= 30000 && Number(formataSaldoUS(saldoBase)) < 50000) {
-		// 		console.log('saldo base maior que 30 mil e menor que 50 mil ' + Number(formataSaldoUS(saldoBase)));
-		// 		valorCalculado = '200000';
-		// 	} else if (Number(formataSaldoUS(saldoBase)) >= 50000 && Number(formataSaldoUS(saldoBase)) < 84817.64) {
-		// 		console.log('saldo base maior que 50 mil e menor que 84817,64 mil ' + Number(formataSaldoUS(saldoBase)));
-		// 		valorCalculado = '300000';
-		// 	} else {
-		// 		console.log('saldo base maior que 84817,64 mil ' + Number(formataSaldoUS(saldoBase)));
-		// 		valorCalculado = (Number(formataSaldoUS(saldoBase)) * Number(arrayFatorPlano[1])).toFixed(2);
-		// 	}
-		// }
-		
-		//if (valorCalculado > 0) {
-			document.getElementById(idValorAcordo).value = formataSaldoBR(valorCalculado);
-		//}echo $numero_contas;
+		document.getElementById(idValorAcordo).value = formataSaldoBR(valorCalculado);
 	}
 	function formataSaldo(id) {
 		valor = document.getElementById(id).value;
-		//console.log('formataSaldo - valor do campo:' + valor);
-		//Remove qualquer caractere não numérico
 		valor = valor.replace(/[^\d]/g, "");
-		//console.log(valor);
-		//Separa o numero em dois
 		valorInteiro = valor.slice(0, -2);
-		//console.log(valorInteiro);
 		valorDecimal = valor.slice(-2);
-		//console.log(valorDecimal);
-		//Adiciona os separadores de milhares
 		valorInteiro = valorInteiro.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-		//Junta os número e adiciona o separador decimal
 		valor = valorInteiro + valorDecimal;
 		valor = valor.replace(/(\d{2})$/, ",$1");
-		//Atualiza o valor do campo de entrada com a moeda formatada
 		document.getElementById(id).value = valor;
 	}	
 	function formataSaldoBR(valor) {
-		//Remove qualquer caractere não numérico
 		valor = valor.replace(/[^\d]/g, "");
-		//console.log(valor);
-		//Separa o numero em dois
 		valorInteiro = valor.slice(0, -2);
-		//console.log(valorInteiro);
 		valorDecimal = valor.slice(-2);
-		//console.log(valorDecimal);
-		//Adiciona os separadores de milhares
 		valorInteiro = valorInteiro.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-		//Junta os número e adiciona o separador decimal
 		valor = valorInteiro + valorDecimal;
 		valor = valor.replace(/(\d{2})$/, ",$1");
-		//Atualiza o valor do campo de entrada com a moeda formatada
 		return valor;
 	}		
 	function formataSaldoUS(valor) {
-		//Remove qualquer caractere não numérico
 		valor = valor.replace(/[^\d]/g, "");
-		//console.log(valor);
-		//Separa o numero em dois
 		valorInteiro = valor.slice(0, -2);
-		//console.log(valorInteiro);
 		valorDecimal = valor.slice(-2);
-		//console.log(valorDecimal);
-		//Adiciona os separadores de milhares
 		valorInteiro = valorInteiro.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1");
-		//Junta os número e adiciona o separador decimal
 		valor = valorInteiro + valorDecimal;
 		valor = valor.replace(/(\d{2})$/, ".$1");
-		//Atualiza o valor do campo de entrada com a moeda formatada
 		return valor;
 	}	
 </script>

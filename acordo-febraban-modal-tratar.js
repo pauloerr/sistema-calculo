@@ -105,9 +105,7 @@ function SalvarCalculoAcordoFebraban() {
                 'anoFator': anoFator
             },
             dataType: 'json',
-            beforeSend: function() {
-            //     $('#cod-protocoloAcordoFebraban').html('Gravando cálculo. Aguarde...');
-            //     $('#protocoloAcordoFebrabanHidden').val('');                  
+            beforeSend: function() {              
             },
             success: function(retorno) {
                 console.log(retorno);
@@ -141,9 +139,7 @@ function SalvarCalculoAcordoFebraban() {
                 'anoFator': anoFator
             },
             dataType: 'json',
-            beforeSend: function() {
-                // $('#cod-protocoloAcordoFebraban').html('Atualizando cálculo. Aguarde...');
-                // $('#protocoloAcordoFebrabanHidden').val('');                
+            beforeSend: function() {         
             },
             success: function(retorno) {
                 $('#cod-protocoloAcordoFebraban').html(retorno + ' - Parâmetros de cálculo atualizados com sucesso!');
@@ -156,7 +152,6 @@ function SalvarCalculoAcordoFebraban() {
         });
     }
 
-    //Habilita botão de impressão
     console.log('remove disabled');
     $('#btnImprimirCalcular').removeAttr("disabled");
 
@@ -175,14 +170,13 @@ function ExecutaRotinaImpressao() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ 'codProtocolo': codProtocolo }) // Passe os dados necessários aqui
+        body: JSON.stringify({ 'codProtocolo': codProtocolo })
     })
     .then(response => response.text())
     .then(html => {
-        // Abre uma nova janela sem os botões do navegador
+
         const janelaImpressao = window.open('', '', 'width=800,height=600');
 
-        // Insere o conteúdo carregado na nova janela
         janelaImpressao.document.open();
         janelaImpressao.document.write(`
             <html>
@@ -197,12 +191,10 @@ function ExecutaRotinaImpressao() {
             </html>
         `);
         janelaImpressao.document.close();
-        
-        // Foca a janela e chama a função de impressão
+
         janelaImpressao.focus();
         janelaImpressao.print();
-        
-        // Fecha a janela após a impressão
+
         janelaImpressao.onafterprint = () => janelaImpressao.close();
     })
     .catch(error => {

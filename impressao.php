@@ -1,27 +1,17 @@
 <?php
 header("Content-Type: text/html; charset=UTF-8");
-
-// Recebe o JSON enviado e decodifica para um array PHP
 $dados = json_decode(file_get_contents('php://input'), true);
-
-// Acessa o código do protocolo recebido
 $codProtocolo = isset($dados['codProtocolo']) ? htmlspecialchars($dados['codProtocolo']) : '0';
 
-// Conexão com o banco de dados
 include_once 'db_connect.php';
 include_once 'model.php';
 
 if (isset($codProtocolo)) {
-    // Obtém a conexão
-    $conn = getConnection(); // A conexão deve ser obtida aqui
+    $conn = getConnection();
 
-    // Cria uma nova instância da classe AcordoFebraban
     $acordoFebraban = new AcordoFebraban($conn);
-
-    // Chamada da função getCalculos
     $calculo = $acordoFebraban->getCalculo($codProtocolo);
     
-    // Atribuição de valores às variáveis
     $codIdentificacao = htmlspecialchars($calculo[0]['cod_identificacao']);
     $processo = htmlspecialchars($calculo[0]['processo']);
     $nome = htmlspecialchars($calculo[0]['parte']);
@@ -41,7 +31,6 @@ if (isset($codProtocolo)) {
 
     $anoFatorFebraban = $acordoFebraban->getAnoFAtor();
 
-    // Fecha a conexão
     $conn->close();
 }
 
@@ -53,7 +42,6 @@ if (isset($codProtocolo)) {
     <title>Protocolo de cálculo: <?php echo $codProtocolo ?></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Estilos personalizados */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -102,22 +90,21 @@ if (isset($codProtocolo)) {
             color: #555;
         }
 
-       /* Estilos para a tabela */
        .tabela-resultados {
             border-collapse: collapse;
             width: 100%;
             margin: 20px 0;
         }
         .tabela-resultados th, .tabela-resultados td {
-            border: 1px solid #ddd; /* Cor da borda */
-            padding: 8px; /* Espaçamento interno */
-            text-align: left; /* Alinhamento do texto */
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
         .tabela-resultados th {
-            background-color: #f2f2f2; /* Cor de fundo para o cabeçalho */
+            background-color: #f2f2f2;
         }
         .tabela-resultados tr:hover {
-            background-color: #f1f1f1; /* Cor de fundo ao passar o mouse */
+            background-color: #f1f1f1;
         }        
     </style>
 </head>

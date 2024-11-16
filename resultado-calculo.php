@@ -1,7 +1,7 @@
 <?php
-include_once 'db_connect.php'; // Inclui o script de conexão
+include_once 'db_connect.php';
 $conn = getConnection();
-// Consulta SQL
+
 $sql = "SELECT * FROM view_ano_fator";
 $data = $conn->query($sql);
 if ($data === false) {
@@ -10,11 +10,8 @@ if ($data === false) {
 }
 $anoFatorFebraban = array();
 if ($data->num_rows > 0) {
-    // Obter apenas a primeira linha
     $anoFatorFebraban = $data->fetch_assoc();
 }
-
-// Fechar a conexão
 $conn->close();
 
 ?>

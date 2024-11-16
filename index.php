@@ -39,10 +39,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         </div>
     </nav>
 
-    <!-- Conteúdo Dinâmico -->
-    <div id="conteudo" class="container mt-1 flex-grow-1">
-        <!-- O conteúdo das outras páginas será carregado aqui -->
-    </div>
+    <div id="conteudo" class="container mt-1 flex-grow-1"></div>
 
     <footer class="bg-primary text-white text-center py-3 mt-auto">
         <p>&copy; 2024 Sistema de Cálculos</p>
@@ -50,9 +47,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="scripts.js"></script>
-    <!-- Em seguida, o CSS do DataTables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <!-- E por último, o JS do DataTables -->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 </body>
 </html>

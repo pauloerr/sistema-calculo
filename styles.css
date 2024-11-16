@@ -1,27 +1,23 @@
-/* Estilo para o conteúdo principal */
+
 .container {
     padding-top: 20px;
 }
 
-/* Navbar azulada */
 .navbar {
-    background-color: #007bff; /* Azul padrão do Bootstrap */
+    background-color: #007bff;
 }
 
-/* Rodapé com cor azulada */
 footer {
     background-color: #007bff;
     color: white;
 }
 
-/* Estilo para links na navbar ao passar o mouse */
 .nav-link:hover {
-    color: #dcefff; /* Azul mais claro */
+    color: #dcefff;
 }
 
-/* Conteúdo dinâmico */
 #conteudo {
-    min-height: 400px; /* Garante uma altura mínima para o conteúdo */
+    min-height: 400px;
 }
 
 a {
