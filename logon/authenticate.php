@@ -1,6 +1,6 @@
 <?php
 session_start();
-include 'config.php'; // Arquivo de configuração para conexão ao banco
+include 'config.php';
 
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';

@@ -69,7 +69,7 @@ $(document).ready(function() {
         $.post('register_user.php', formData, function(response) {
             var data = JSON.parse(response);
             if (data.success) {
-                window.location.href = 'index.php'; // Redireciona para a página de logon
+                window.location.href = 'index.php';
             } else {
                 $('#error-message').text(data.message).removeClass('d-none');
             }

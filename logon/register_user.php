@@ -1,5 +1,4 @@
 <?php
-// Ativar exibição de erros
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -14,7 +13,6 @@ if (empty($username) || empty($password)) {
     exit;
 }
 
-// Verifica se o usuário já existe
 $query = "SELECT cod_usuario FROM usuarios WHERE usuario = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('s', $username);
@@ -30,10 +28,8 @@ if ($stmt->num_rows > 0) {
 
 $stmt->close();
 
-// Hash da senha para armazenar de forma segura
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-// Insere o novo usuário
 $query = "INSERT INTO usuarios (usuario, senha, email) VALUES (?, ?, ?)";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('sss', $username, $hashed_password, $email);
